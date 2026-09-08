@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualizador de documentação</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">TJ</div>
+          <div><strong>Tarefas em Jogo</strong><span>Documentação</span></div>
+        </div>
+        <label class="search-box" for="search">
+          <span aria-hidden="true">⌕</span>
+          <input id="search" type="search" placeholder="Buscar documentação" autocomplete="off" />
+          <kbd>Ctrl K</kbd>
+        </label>
+        <button id="folder-button" class="folder-button">▣&nbsp; Escolher pasta</button>
+        <nav id="document-nav" aria-label="Documentos"></nav>
+        <div class="sidebar-footer"><span class="status-dot"></span><span>Leitura local</span><span class="version">v1.0</span></div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <button id="menu-button" class="icon-button mobile-only" aria-label="Abrir navegação">☰</button>
+          <div class="breadcrumbs"><span>Tarefas em Jogo</span><b>/</b><strong id="current-title">Carregando...</strong></div>
+          <div class="top-actions">
+            <button id="theme-button" class="icon-button" aria-label="Alternar tema" title="Alternar tema">◐</button>
+            <button id="print-button" class="icon-button" aria-label="Imprimir documento" title="Imprimir documento">⎙</button>
+          </div>
+        </header>
+        <div class="reading-layout">
+          <article id="content" class="document-content" aria-live="polite"></article>
+          <aside class="outline-panel"><div class="outline-label">Neste documento</div><nav id="outline"></nav></aside>
+        </div>
+        <footer class="document-footer"><button id="previous-button" class="nav-button">← Anterior</button><span id="document-count"></span><button id="next-button" class="nav-button">Próximo →</button></footer>
+      </main>
+    </div>
+    <script src="../node_modules/marked/lib/marked.umd.js"></script>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+{
+  "name": "tarefas-em-jogo-docs",
+  "version": "1.0.0",
+  "description": "Visualizador desktop da documentação do Tarefas em Jogo",
+  "private": true,
+  "main": "main.cjs",
+  "author": "Tarefas em Jogo",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis",
+    "dist:dir": "electron-builder --win dir"
+  },
+  "dependencies": {
+    "marked": "^15.0.12"
+  },
+  "devDependencies": {
+    "electron": "^37.3.1",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "br.com.tarefasemjogo.docs",
+    "productName": "Visualizador de documentação",
+    "artifactName": "visualizador-documentacao-${version}-setup.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "renderer/**/*",
+      "node_modules/marked/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../task-docs",
+        "to": "docs",
+        "filter": [
+          "README.md",
+          "docs/**/*",
+          "task-api/README.md",
+          "task-api/docs/**/*",
+          "task-web/docs/README.md",
+          "task-app/README.md",
+          "task-app/docs/README.md"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "legalTrademarks": "Tarefas em Jogo"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
