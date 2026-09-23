@@ -1,12 +1,13 @@
 {
   "name": "tarefas-em-jogo-docs",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Visualizador desktop da documentação do Tarefas em Jogo",
   "private": true,
   "main": "main.cjs",
   "author": "Tarefas em Jogo",
   "scripts": {
     "start": "electron .",
+    "test": "node --test test/*.test.cjs",
     "dist": "electron-builder --win nsis",
     "dist:dir": "electron-builder --win dir"
   },

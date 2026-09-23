@@ -50,7 +50,7 @@ function createWindow() {
   window.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
 
-ipcMain.handle('documents:list', readDocuments);
+ipcMain.handle('documents:list', () => readDocuments());
 ipcMain.handle('documents:choose-folder', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Selecionar pasta da documentação',
