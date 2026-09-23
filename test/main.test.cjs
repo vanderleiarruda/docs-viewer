@@ -5,6 +5,67 @@ const path = require('node:path');
 const os = require('node:os');
 const vm = require('node:vm');
 
+test('filtered navigation keeps original document indices and opens the matching document', async () => {
+  const elements = new Map();
+  const elementFor = (selector) => {
+    if (!elements.has(selector)) elements.set(selector, {
+      innerHTML: '', value: '', handlers: new Map(),
+      addEventListener(event, handler) { this.handlers.set(event, handler); },
+      querySelectorAll() { return []; },
+    });
+    return elements.get(selector);
+  };
+  let buttons = [];
+  const document = {
+    querySelector: elementFor,
+    querySelectorAll(selector) {
+      if (selector !== '.doc-link') return [];
+      buttons = [...elementFor('#document-nav').innerHTML.matchAll(/data-index="(\d+)"/g)].map((match) => ({
+        dataset: { index: match[1] },
+        addEventListener(event, handler) { if (event === 'click') this.click = handler; },
+      }));
+      return buttons;
+    },
+    addEventListener() {},
+  };
+  const source = await fs.readFile(path.join(__dirname, '..', 'renderer', 'renderer.js'), 'utf8');
+  await vm.runInNewContext(source, {
+    document,
+    marked: { parse: (content) => content },
+    window: {
+      scrollTo() {},
+      documentation: { load: async () => [
+        { title: 'First', content: 'Introduction', group: 'Root' },
+        { title: 'Second', content: 'Installation', group: 'Guides' },
+        { title: 'Third', content: 'Troubleshooting', group: 'Guides' },
+      ] },
+    },
+  });
+  const search = elementFor('#search');
+  const filter = (value) => {
+    search.value = value;
+    search.handlers.get('input')({ target: search });
+  };
+  assert.deepEqual(buttons.map((button) => button.dataset.index), ['0', '1', '2']);
+  filter(' second ');
+  assert.deepEqual(buttons.map((button) => button.dataset.index), ['1']);
+  assert.doesNotMatch(elementFor('#document-nav').innerHTML, /doc-link active/);
+  buttons[0].click();
+  assert.equal(elementFor('#current-title').textContent, 'Second');
+  assert.equal(elementFor('#content').innerHTML, 'Installation');
+  assert.equal(elementFor('#document-count').textContent, '2 de 3');
+  assert.match(elementFor('#document-nav').innerHTML, /doc-link active/);
+  filter('TROUBLESHOOTING');
+  assert.deepEqual(buttons.map((button) => button.dataset.index), ['2']);
+  buttons[0].click();
+  assert.equal(elementFor('#current-title').textContent, 'Third');
+  assert.equal(elementFor('#next-button').disabled, true);
+  filter('missing');
+  assert.equal(buttons.length, 0);
+  filter('');
+  assert.deepEqual(buttons.map((button) => button.dataset.index), ['0', '1', '2']);
+});
+
 async function setup(context) {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'docs-viewer-test-'));
   context.after(() => fs.rm(temporary, { recursive: true, force: true }));

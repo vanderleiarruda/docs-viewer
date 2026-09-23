@@ -7,7 +7,8 @@ const slugify = (text) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\
 function renderNavigation(filter = '') {
   const needle = filter.trim().toLowerCase();
   const groups = new Map();
-  documents.filter((document) => !needle || `${document.title} ${document.content}`.toLowerCase().includes(needle)).forEach((document, index) => {
+  documents.forEach((document, index) => {
+    if (needle && !`${document.title} ${document.content}`.toLowerCase().includes(needle)) return;
     if (!groups.has(document.group)) groups.set(document.group, []);
     groups.get(document.group).push({ document, index });
   });
